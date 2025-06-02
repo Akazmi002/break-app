@@ -1,18 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-  Home,
-  BarChart3,
-  BookOpen,
-  MessageCircle,
-  Menu,
-  Heart,
-  AlertCircle,
-  Check,
-  Minus,
-  ChevronRight,
-} from "lucide-react"
+import { Home, BarChart3, BookOpen, MessageCircle, Menu, Heart, Check, Minus, ChevronRight } from "lucide-react"
 
 const weekDays = ["S", "S", "M", "T", "W", "T", "F"]
 
@@ -34,10 +23,9 @@ const thoughtPatterns = [
 export default function DashboardPage() {
   const [healingProgress] = useState(20) // This would be dynamic
   const [weeklyHabits] = useState([true, true, true, true, true, true, false]) // true = completed, false = skipped
-  const [showPanicModal, setShowPanicModal] = useState(false)
 
   const handleReframing = () => {
-    alert("Opening reframing exercise - this would navigate to reframing page")
+    window.location.href = "/reframe"
   }
 
   const handleEmergencyJournal = () => {
@@ -46,15 +34,6 @@ export default function DashboardPage() {
 
   const handleThoughtPattern = (patternId: number) => {
     alert(`Opening full CBT report for pattern ${patternId} - this would navigate to insights page`)
-  }
-
-  const handlePanicButton = () => {
-    setShowPanicModal(true)
-  }
-
-  const handlePanicOption = (option: string) => {
-    setShowPanicModal(false)
-    alert(`Starting ${option} - this would open the specific exercise`)
   }
 
   return (
@@ -221,19 +200,6 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
-
-        {/* Panic Button */}
-        <div className="mb-8">
-          <button
-            onClick={handlePanicButton}
-            className="w-full h-14 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold text-lg rounded-full transition-all duration-200 hover:shadow-lg shadow-red-900/30 border-2 border-red-500/30"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              Panic Button
-            </div>
-          </button>
-        </div>
       </div>
 
       {/* Bottom Navigation */}
@@ -262,49 +228,6 @@ export default function DashboardPage() {
         </div>
         <div className="w-32 h-1 bg-white/60 rounded-full mx-auto mb-2"></div>
       </div>
-
-      {/* Panic Modal */}
-      {showPanicModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
-          <div className="bg-slate-800 rounded-3xl p-6 w-full max-w-sm border border-gray-700/50">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-red-400" />
-              </div>
-              <h3 className="text-white font-semibold text-xl mb-2">Take a Deep Breath</h3>
-              <p className="text-gray-300 text-sm">Choose what feels right for you right now</p>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => handlePanicOption("Breathing Exercise")}
-                className="w-full p-4 bg-blue-600/20 border border-blue-500/30 rounded-2xl text-white font-medium hover:bg-blue-600/30 transition-colors"
-              >
-                🫁 Breathing Exercise
-              </button>
-              <button
-                onClick={() => handlePanicOption("Grounding Exercise")}
-                className="w-full p-4 bg-green-600/20 border border-green-500/30 rounded-2xl text-white font-medium hover:bg-green-600/30 transition-colors"
-              >
-                🌱 Grounding Exercise
-              </button>
-              <button
-                onClick={() => handlePanicOption("Emergency Journal")}
-                className="w-full p-4 bg-purple-600/20 border border-purple-500/30 rounded-2xl text-white font-medium hover:bg-purple-600/30 transition-colors"
-              >
-                ✍️ Emergency Journal
-              </button>
-            </div>
-
-            <button
-              onClick={() => setShowPanicModal(false)}
-              className="w-full mt-4 p-3 text-gray-400 hover:text-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
