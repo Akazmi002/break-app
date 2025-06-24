@@ -9,10 +9,10 @@ export default function WelcomePage() {
 
   const handleStartQuiz = () => {
     setIsStarting(true)
-    // Navigate to quiz page (placeholder for now)
+    // Navigate to sign-in page
     setTimeout(() => {
       setIsStarting(false)
-      alert("Quiz would start here - this is just a demo!")
+      window.location.href = "/signin"
     }, 1000)
   }
 

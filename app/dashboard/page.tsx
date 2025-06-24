@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Home, BarChart3, BookOpen, MessageCircle, Menu, Heart, Check, Minus, ChevronRight } from "lucide-react"
+import { Home, BookOpen, MessageCircle, Menu, Heart, Check, Minus, ChevronRight } from "lucide-react"
 
 const weekDays = ["S", "S", "M", "T", "W", "T", "F"]
 
@@ -24,12 +24,16 @@ export default function DashboardPage() {
   const [healingProgress] = useState(20) // This would be dynamic
   const [weeklyHabits] = useState([true, true, true, true, true, true, false]) // true = completed, false = skipped
 
+  const handleJournalNavigation = () => {
+    window.location.href = "/journal"
+  }
+
   const handleReframing = () => {
     window.location.href = "/reframe"
   }
 
   const handleEmergencyJournal = () => {
-    alert("Opening emergency journal - this would navigate to emergency journaling page")
+    window.location.href = "/emergency-journal"
   }
 
   const handleThoughtPattern = (patternId: number) => {
@@ -71,7 +75,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-col min-h-[calc(100vh-140px)] px-6 relative z-10 pb-20">
+      <div className="flex flex-col min-h-[calc(100vh-140px)] px-6 relative z-10 pb-24">
         {/* Header with app logo */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -200,33 +204,71 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
+
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <button
+            onClick={handleJournalNavigation}
+            className="p-6 bg-gradient-to-br from-amber-800/30 to-orange-800/30 border border-amber-700/50 rounded-2xl text-center transition-all duration-200 hover:from-amber-700/40 hover:to-orange-700/40 hover:border-amber-600/60 hover:scale-105"
+          >
+            <BookOpen className="w-8 h-8 text-amber-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold text-lg mb-1">Journal</h3>
+            <p className="text-gray-400 text-sm">View your entries</p>
+          </button>
+
+          <button className="p-6 bg-gradient-to-br from-purple-800/30 to-violet-800/30 border border-purple-700/50 rounded-2xl text-center transition-all duration-200 hover:from-purple-700/40 hover:to-violet-700/40 hover:border-purple-600/60 hover:scale-105">
+            <MessageCircle className="w-8 h-8 text-purple-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold text-lg mb-1">Community</h3>
+            <p className="text-gray-400 text-sm">Connect with others</p>
+          </button>
+
+          <button className="p-6 bg-gradient-to-br from-green-800/30 to-emerald-800/30 border border-green-700/50 rounded-2xl text-center transition-all duration-200 hover:from-green-700/40 hover:to-emerald-700/40 hover:border-green-600/60 hover:scale-105">
+            <Menu className="w-8 h-8 text-green-400 mx-auto mb-3" />
+            <h3 className="text-white font-semibold text-lg mb-1">Settings</h3>
+            <p className="text-gray-400 text-sm">Customize your app</p>
+          </button>
+
+          <button className="p-6 bg-gradient-to-br from-slate-800/30 to-gray-800/30 border border-slate-700/50 rounded-2xl text-center transition-all duration-200 hover:from-slate-700/40 hover:to-gray-700/40 hover:border-slate-600/60 hover:scale-105">
+            <div className="w-8 h-8 mx-auto mb-3 flex items-center justify-center">
+              <div className="w-6 h-6 bg-slate-400 rounded-full"></div>
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-1">More</h3>
+            <p className="text-gray-400 text-sm">Additional features</p>
+          </button>
+        </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-gray-700/50">
-        <div className="flex items-center justify-around py-3 px-6">
-          <button className="flex flex-col items-center gap-1 p-2">
+      {/* Bottom Navigation Menu */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-gray-700/50 z-50">
+        <div className="flex items-center justify-around py-2 px-4">
+          <button className="flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 hover:bg-slate-800/50">
             <Home className="w-6 h-6 text-blue-400" />
-            <span className="text-xs text-blue-400">Home</span>
+            <span className="text-xs text-blue-400 font-medium">Home</span>
           </button>
-          <button className="flex flex-col items-center gap-1 p-2">
-            <BarChart3 className="w-6 h-6 text-gray-400" />
-            <span className="text-xs text-gray-400">Stats</span>
-          </button>
-          <button className="flex flex-col items-center gap-1 p-2">
+
+          <button
+            onClick={handleJournalNavigation}
+            className="flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 hover:bg-slate-800/50 active:scale-95"
+          >
             <BookOpen className="w-6 h-6 text-gray-400" />
             <span className="text-xs text-gray-400">Journal</span>
           </button>
-          <button className="flex flex-col items-center gap-1 p-2">
+
+          <button className="flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 hover:bg-slate-800/50">
             <MessageCircle className="w-6 h-6 text-gray-400" />
             <span className="text-xs text-gray-400">Community</span>
           </button>
-          <button className="flex flex-col items-center gap-1 p-2">
+
+          <button className="flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-200 hover:bg-slate-800/50">
             <Menu className="w-6 h-6 text-gray-400" />
             <span className="text-xs text-gray-400">Menu</span>
           </button>
         </div>
-        <div className="w-32 h-1 bg-white/60 rounded-full mx-auto mb-2"></div>
+
+        {/* Home indicator */}
+        <div className="flex justify-center pb-2">
+          <div className="w-32 h-1 bg-white/60 rounded-full"></div>
+        </div>
       </div>
     </div>
   )
