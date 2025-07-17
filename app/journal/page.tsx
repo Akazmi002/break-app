@@ -1,202 +1,254 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Calendar, Heart, Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { ArrowLeft, Plus, BrainCircuit, ChevronRight, Heart, Zap, RefreshCw } from "lucide-react"
+
+// Types
+interface Conversation {
+  insight: string
+  question: string
+  userResponse: string
+}
 
 interface JournalEntry {
   id: number
   date: string
   title: string
   preview: string
-  fullContent: {
-    quote?: string
-    insight: string
-    question: string
-    userResponse: string
-  }[]
+  negativeThoughtPattern: string
+  sessionType: "Reframing" | "Emergency"
+  fullContent: Conversation[]
 }
 
 export default function JournalPage() {
+  const router = useRouter()
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([])
 
+  // Mock data for demonstration
+  const mockJournalEntries: JournalEntry[] = [
+    {
+      id: 1,
+      date: "2025-01-15T10:00:00Z",
+      title: "Feeling Overwhelmed at Work",
+      preview:
+        "Today's meeting was intense. I felt like I couldn't keep up and that everyone else knew more than I did. It's a familiar feeling...",
+      negativeThoughtPattern: "Catastrophizing",
+      sessionType: "Reframing",
+      fullContent: [
+        {
+          insight:
+            "It seems you're jumping to the worst-case scenario, a pattern known as Catastrophizing. When we catastrophize, we imagine the most extreme negative outcome without considering more realistic possibilities.",
+          question: "What is a more realistic, less catastrophic outcome of this situation at work?",
+          userResponse:
+            "I guess a more realistic outcome is that I'll get some feedback on my presentation, and I can use it to improve for next time. It's unlikely I'll be fired over one meeting where I felt unprepared.",
+        },
+        {
+          insight:
+            "That's a much more balanced perspective. By separating the event from the catastrophic fear, you regain control over your emotional response.",
+          question: "What's one small, concrete step you can take based on this new perspective?",
+          userResponse:
+            "I can schedule a brief chat with my manager to ask for specific feedback. That feels proactive instead of just worrying about what might happen.",
+        },
+      ],
+    },
+    {
+      id: 2,
+      date: "2025-01-12T18:30:00Z",
+      title: "A Misunderstanding with a Friend",
+      preview:
+        "I had a small disagreement with Sarah. My mind immediately jumped to the worst conclusion: our friendship is over. I need to reframe this.",
+      negativeThoughtPattern: "Mind Reading",
+      sessionType: "Emergency",
+      fullContent: [
+        {
+          insight:
+            "You're assuming you know what Sarah is thinking without any real evidence. This is called Mind Reading, and it often leads us to negative conclusions that aren't based in reality.",
+          question: "What evidence do you actually have about what Sarah is thinking or feeling?",
+          userResponse:
+            "Honestly, I don't have much evidence. She seemed a bit quiet after our conversation, but that could be because she was tired or thinking about something else entirely. I'm just assuming the worst.",
+        },
+        {
+          insight:
+            "Exactly. You're filling in the gaps with negative assumptions. True friends can disagree and still maintain their friendship.",
+          question: "How might you approach Sarah to clarify the situation instead of assuming?",
+          userResponse:
+            "I could send her a simple text asking if we're okay, or maybe suggest we grab coffee this weekend. A direct, caring approach is probably better than letting my mind spiral.",
+        },
+      ],
+    },
+    {
+      id: 3,
+      date: "2025-01-10T14:15:00Z",
+      title: "Doubting My Career Choice",
+      preview:
+        "Seeing my college friends' success on social media made me question everything. Am I on the right path? Should I have chosen differently?",
+      negativeThoughtPattern: "All-or-Nothing Thinking",
+      sessionType: "Reframing",
+      fullContent: [
+        {
+          insight:
+            "You're viewing your career in black and white terms - either you're successful or you're not, either you made the right choice or the wrong one. Life and careers are much more nuanced than that.",
+          question: "What are some positive aspects of your current career path that you might be overlooking?",
+          userResponse:
+            "Well, I do enjoy the creative aspects of my work, and I've learned a lot in the past year. I also have good work-life balance, which some of my friends don't have despite their higher salaries.",
+        },
+      ],
+    },
+  ]
+
   useEffect(() => {
-    // Load saved journal entries from localStorage
     const savedEntries = localStorage.getItem("reframe-journal-entries")
     if (savedEntries) {
-      setJournalEntries(JSON.parse(savedEntries))
+      try {
+        const parsedEntries = JSON.parse(savedEntries).map((entry: any) => ({
+          ...entry,
+          sessionType: entry.sessionType || "Reframing",
+          negativeThoughtPattern: entry.negativeThoughtPattern || "General Pattern",
+        }))
+        setJournalEntries(parsedEntries)
+      } catch (error) {
+        console.error("Error parsing journal entries:", error)
+        setJournalEntries(mockJournalEntries)
+      }
+    } else {
+      setJournalEntries(mockJournalEntries)
     }
   }, [])
 
-  const handleBack = () => {
-    window.location.href = "/dashboard"
-  }
-
-  const handleNewEntry = () => {
-    window.location.href = "/reframe"
-  }
-
-  const handleViewEntry = (entryId: number) => {
-    // Navigate to a detailed view of the journal entry
-    window.location.href = `/journal/${entryId}`
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
-  }
-
-  const getTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
+  const timeAgo = (dateString: string) => {
     const now = new Date()
+    const date = new Date(dateString)
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}d ago`
-
-    const diffInWeeks = Math.floor(diffInDays / 7)
-    return `${diffInWeeks}w ago`
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24)
+      return `${diffInDays} days ago`
+    }
   }
 
+  const handleEntryClick = (entryId: number) => {
+    router.push(`/journal/${entryId}`)
+  }
+
+  const AnimatedStars = () => (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {Array.from({ length: 100 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-1 h-1 bg-white/60 rounded-full animate-pulse"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 3}s`,
+            animationDuration: `${2 + Math.random() * 3}s`,
+            opacity: Math.random() * 0.4 + 0.2,
+          }}
+        />
+      ))}
+    </div>
+  )
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-orange-50 relative overflow-hidden">
-      {/* Subtle background texture */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(139,69,19,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white relative overflow-hidden">
+      <AnimatedStars />
 
-      {/* Status bar simulation */}
-      <div className="flex justify-between items-center p-4 text-stone-700 relative z-10">
-        <div className="text-sm font-light tracking-wide">8:00</div>
-        <div className="flex items-center gap-1">
-          <div className="flex gap-1">
-            <div className="w-1 h-3 bg-stone-600 rounded-full"></div>
-            <div className="w-1 h-3 bg-stone-600 rounded-full"></div>
-            <div className="w-1 h-3 bg-stone-400 rounded-full"></div>
-          </div>
-          <div className="ml-2 w-6 h-3 border border-stone-600 rounded-sm">
-            <div className="w-4 h-full bg-stone-600 rounded-sm"></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="relative z-10 px-4 pb-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={handleBack}
-            className="w-10 h-10 bg-stone-800 rounded-xl flex items-center justify-center hover:bg-stone-700 transition-all duration-300 shadow-lg"
+      <header className="sticky top-0 z-20 bg-slate-950/50 backdrop-blur-md">
+        <div className="flex items-center justify-between p-4 max-w-5xl mx-auto">
+          <Link
+            href="/dashboard"
+            className="p-2 rounded-full hover:bg-slate-800/60 transition-colors"
+            aria-label="Back to dashboard"
           >
-            <ArrowLeft className="w-5 h-5 text-amber-50" />
-          </button>
-          <div className="text-center">
-            <p className="text-stone-600 font-light tracking-wide text-sm">Your Journal</p>
-          </div>
-          <button
-            onClick={handleNewEntry}
-            className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center hover:bg-amber-700 transition-all duration-300 shadow-lg"
+            <ArrowLeft className="w-6 h-6" />
+          </Link>
+          <h1 className="text-lg font-semibold tracking-wider">Journal</h1>
+          <Link
+            href="/reframe"
+            className="p-2 rounded-full hover:bg-slate-800/60 transition-colors"
+            aria-label="New entry"
           >
-            <Plus className="w-5 h-5 text-white" />
-          </button>
+            <Plus className="w-6 h-6" />
+          </Link>
         </div>
-      </div>
+      </header>
 
-      {/* Main content */}
-      <div className="px-6 relative z-10 pb-8">
-        {/* Page Title */}
+      <main className="px-4 sm:px-6 py-8 max-w-3xl mx-auto relative z-10">
         <div className="mb-12 text-center">
-          <div className="relative">
-            <h1 className="text-3xl font-light text-stone-800 leading-tight tracking-wide">Your Healing Journal</h1>
-            <div className="mt-3 flex justify-center">
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-stone-400 to-transparent"></div>
-            </div>
-            <div className="mt-2 flex justify-center space-x-1">
-              <div className="w-1 h-1 bg-stone-400 rounded-full"></div>
-              <div className="w-1 h-1 bg-stone-300 rounded-full"></div>
-              <div className="w-1 h-1 bg-stone-400 rounded-full"></div>
-            </div>
-          </div>
+          <h2 className="text-3xl font-bold text-white sm:text-4xl">Your Healing Journey</h2>
+          <p className="text-gray-400 mt-2 max-w-md mx-auto">A collection of your reflections and breakthroughs.</p>
+          <div className="mt-4 h-1 w-24 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto" />
         </div>
 
-        {/* Journal Entries */}
         {journalEntries.length === 0 ? (
-          // Empty state
-          <div className="bg-gradient-to-br from-white via-amber-50/30 to-orange-50/20 rounded-3xl shadow-2xl border border-stone-200/50 p-12 text-center relative backdrop-blur-sm">
-            {/* Decorative corner flourishes */}
-            <div className="absolute top-6 left-6 w-8 h-8 border-l-2 border-t-2 border-stone-300/40 rounded-tl-lg"></div>
-            <div className="absolute top-6 right-6 w-8 h-8 border-r-2 border-t-2 border-stone-300/40 rounded-tr-lg"></div>
-
-            <div className="mb-8">
-              <Heart className="w-16 h-16 text-stone-400 mx-auto mb-4" />
-              <h3 className="text-stone-700 text-xl font-light tracking-wide mb-3">Your journal is waiting</h3>
-              <p className="text-stone-500 font-light tracking-wide leading-relaxed max-w-md mx-auto">
-                Start your first reframing session to begin capturing your healing journey. Each entry becomes a step
-                toward understanding yourself better.
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-12">
+              <Heart className="w-16 h-16 text-blue-400 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-white mb-4">Your Journey Begins Here</h3>
+              <p className="text-gray-400 mb-8 max-w-md mx-auto">
+                Start your first reframing session to begin building your personal collection of insights and
+                breakthroughs.
               </p>
+              <Link
+                href="/reframe"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold px-6 py-3 rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-200"
+              >
+                <Plus className="w-5 h-5" />
+                Start Your First Entry
+              </Link>
             </div>
-
-            <button
-              onClick={handleNewEntry}
-              className="bg-gradient-to-br from-stone-700 to-stone-800 hover:from-stone-600 hover:to-stone-700 text-white px-8 py-4 rounded-2xl font-medium tracking-wide transition-all duration-300 shadow-lg"
-            >
-              Start Your First Entry
-            </button>
-
-            {/* Decorative bottom flourishes */}
-            <div className="absolute bottom-6 left-6 w-8 h-8 border-l-2 border-b-2 border-stone-300/40 rounded-bl-lg"></div>
-            <div className="absolute bottom-6 right-6 w-8 h-8 border-r-2 border-b-2 border-stone-300/40 rounded-br-lg"></div>
           </div>
         ) : (
-          // Journal entries list
           <div className="space-y-6">
             {journalEntries.map((entry) => (
               <button
                 key={entry.id}
-                onClick={() => handleViewEntry(entry.id)}
-                className="w-full bg-gradient-to-br from-white via-amber-50/30 to-orange-50/20 rounded-3xl shadow-2xl border border-stone-200/50 p-8 text-left transition-all duration-300 hover:shadow-3xl hover:border-amber-300/50 backdrop-blur-sm relative"
+                onClick={() => handleEntryClick(entry.id)}
+                className="w-full bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-6 sm:p-8 hover:border-blue-500/50 transition-all duration-300 text-left group"
               >
-                {/* Decorative corner flourishes */}
-                <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-stone-300/40 rounded-tl-lg"></div>
-                <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-stone-300/40 rounded-tr-lg"></div>
-
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-stone-500" />
-                    <span className="text-stone-600 font-light tracking-wide text-sm">{formatDate(entry.date)}</span>
+                <div className="relative z-10">
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <div className="flex items-center gap-2 text-sm rounded-full px-3 py-1 bg-blue-900/50 border border-blue-500/30">
+                      <BrainCircuit className="w-4 h-4 text-blue-400" />
+                      <span className="font-semibold text-blue-300">{entry.negativeThoughtPattern}</span>
+                    </div>
+                    <div
+                      className={`flex items-center gap-2 text-sm rounded-full px-3 py-1 ${
+                        entry.sessionType === "Emergency"
+                          ? "bg-amber-900/50 border-amber-500/30"
+                          : "bg-teal-900/50 border-teal-500/30"
+                      }`}
+                    >
+                      {entry.sessionType === "Emergency" ? (
+                        <Zap className="w-4 h-4 text-amber-400" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4 text-teal-400" />
+                      )}
+                      <span
+                        className={`font-semibold ${
+                          entry.sessionType === "Emergency" ? "text-amber-300" : "text-teal-300"
+                        }`}
+                      >
+                        {entry.sessionType} Session
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-stone-400 font-light text-xs tracking-wide">{getTimeAgo(entry.date)}</span>
+                  <p className="text-sm text-gray-500 mb-2">{timeAgo(entry.date)}</p>
+                  <h3 className="text-white font-semibold text-xl tracking-wide mb-3">{entry.title}</h3>
+                  <p className="text-gray-400 font-light leading-relaxed tracking-wide line-clamp-2">{entry.preview}</p>
+                  <div className="flex justify-end items-center mt-4">
+                    <span className="text-blue-400 font-medium text-sm">View History</span>
+                    <ChevronRight className="w-5 h-5 text-blue-400 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-
-                <h3 className="text-stone-800 font-medium text-lg tracking-wide mb-3">{entry.title}</h3>
-
-                <div className="relative mb-4">
-                  <div className="absolute -left-2 top-0 w-1 h-full bg-gradient-to-b from-amber-400/30 to-transparent rounded-full"></div>
-                  <p className="text-stone-600 font-light leading-relaxed tracking-wide pl-4 line-clamp-3">
-                    {entry.preview}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-stone-500 font-light text-sm tracking-wide">
-                    {entry.fullContent.length} reflection{entry.fullContent.length !== 1 ? "s" : ""}
-                  </span>
-                  <div className="text-amber-600 font-medium text-sm tracking-wide">Read more →</div>
-                </div>
-
-                {/* Decorative bottom flourishes */}
-                <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-stone-300/40 rounded-bl-lg"></div>
-                <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-stone-300/40 rounded-br-lg"></div>
               </button>
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }
