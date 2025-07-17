@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Home, BookOpen, MessageCircle, Menu, Heart, Check, Minus, ChevronRight } from "lucide-react"
+import { Home, BookOpen, MessageCircle, Menu, Heart, Check, Minus, ChevronRight, ArrowRight } from "lucide-react"
 
 const weekDays = ["S", "S", "M", "T", "W", "T", "F"]
 
@@ -17,6 +17,12 @@ const thoughtPatterns = [
     label: "Blaming yourself for everything",
     progress: 15,
     color: "from-purple-500 to-violet-600",
+  },
+  {
+    id: 3,
+    label: "Thinking it'll always hurt this much",
+    progress: 8,
+    color: "from-emerald-500 to-teal-600",
   },
 ]
 
@@ -37,7 +43,8 @@ export default function DashboardPage() {
   }
 
   const handleThoughtPattern = (patternId: number) => {
-    alert(`Opening full CBT report for pattern ${patternId} - this would navigate to insights page`)
+    // Navigate to dedicated thought pattern page with source tracking
+    window.location.href = `/insights/${patternId}?from=dashboard`
   }
 
   return (
@@ -110,18 +117,22 @@ export default function DashboardPage() {
           <div className="flex justify-center gap-4">
             {weekDays.map((day, index) => (
               <div key={index} className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    weeklyHabits[index]
-                      ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-900/30"
-                      : "bg-gray-700/50 border border-gray-600"
-                  }`}
-                >
-                  {weeklyHabits[index] ? (
-                    <Check className="w-6 h-6 text-white" />
-                  ) : (
-                    <Minus className="w-6 h-6 text-gray-400" />
-                  )}
+                <div className="relative">
+                  {/* Glowing ring */}
+                  <div className="absolute inset-0 w-12 h-12 rounded-full bg-gradient-to-r from-blue-400/30 to-indigo-500/30 blur-sm animate-pulse"></div>
+                  <div
+                    className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      weeklyHabits[index]
+                        ? "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg shadow-blue-900/30"
+                        : "bg-gray-700/50 border border-gray-600"
+                    }`}
+                  >
+                    {weeklyHabits[index] ? (
+                      <Check className="w-6 h-6 text-white" />
+                    ) : (
+                      <Minus className="w-6 h-6 text-gray-400" />
+                    )}
+                  </div>
                 </div>
                 <span className="text-gray-400 text-xs font-medium">{day}</span>
               </div>
@@ -143,36 +154,145 @@ export default function DashboardPage() {
           <div className="text-white text-4xl font-bold">12d</div>
         </div>
 
-        {/* Reframing Section */}
-        <div className="mb-8 space-y-4">
-          {/* Let's Start Reframing Button */}
-          <button
-            onClick={handleReframing}
-            className="w-full p-5 bg-gradient-to-r from-blue-800/40 to-teal-800/40 border border-blue-700/50 rounded-2xl text-left transition-all duration-200 hover:from-blue-700/50 hover:to-teal-700/50 hover:border-blue-600/60"
-          >
-            <div className="flex items-start gap-4">
-              <div className="text-2xl">🧠</div>
-              <div className="flex-1">
-                <h3 className="text-white font-semibold text-lg mb-2">Let's Start Reframing</h3>
-                <p className="text-gray-300 text-sm italic mb-1">"I don't think I'll ever feel okay again."</p>
-                <p className="text-gray-400 text-sm">That thought has been heavy... Let's reflect on that.</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-gray-400 mt-1" />
+        {/* Enhanced CBT Continuation Section */}
+        <div className="mb-8 space-y-6">
+          {/* CBT Progress Header */}
+          <div className="text-center">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-600/30 px-6 py-3 rounded-full backdrop-blur-sm mb-4">
+              <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
+              <span className="text-blue-300 font-semibold text-sm uppercase tracking-wider">CBT Session Active</span>
+              <div
+                className="w-3 h-3 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-pulse"
+                style={{ animationDelay: "0.5s" }}
+              ></div>
             </div>
-          </button>
+            <h3 className="text-white font-bold text-xl mb-2">Your Healing Journey Continues</h3>
+            <p className="text-gray-300 text-sm">
+              You're making real progress. Let's keep transforming your thoughts together.
+            </p>
+          </div>
 
-          {/* Emergency Journal Button */}
+          {/* Current CBT Pattern Card */}
+          <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-gray-700/50 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-xl"></div>
+
+            {/* Pattern Information */}
+            <div className="relative z-10 space-y-6">
+              {/* Current Pattern Header */}
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 bg-orange-900/30 border border-orange-600/40 px-4 py-2 rounded-full mb-4">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                  <span className="text-orange-300 font-bold text-sm">PATTERN 4 OF 8</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Catastrophizing Thoughts</h2>
+                <p className="text-gray-300 text-sm max-w-md mx-auto leading-relaxed">
+                  When we imagine the worst possible outcomes and believe they're inevitable
+                </p>
+              </div>
+
+              {/* Progress Visualization */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <div className="text-lg">🧠</div>
+                    </div>
+                    <div>
+                      <span className="text-white font-semibold text-lg">Pattern Progress</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-green-400 font-bold text-sm">67% Complete</span>
+                        <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+                        <span className="text-gray-400 text-xs">Almost there!</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-blue-400 font-bold text-2xl">67%</div>
+                    <div className="text-gray-400 text-xs">of this pattern</div>
+                  </div>
+                </div>
+
+                {/* Enhanced Progress Bar */}
+                <div className="relative">
+                  <div className="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden">
+                    <div className="relative h-full">
+                      <div
+                        className="bg-gradient-to-r from-green-500 via-blue-500 to-indigo-600 h-full rounded-full transition-all duration-2000 ease-out relative overflow-hidden"
+                        style={{ width: "67%" }}
+                      >
+                        {/* Animated shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Progress markers */}
+                  <div className="flex justify-between mt-2 px-1">
+                    <span className="text-xs text-gray-500">Start</span>
+                    <span className="text-xs text-blue-400 font-medium">Current</span>
+                    <span className="text-xs text-gray-500">Complete</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compact CTA Button */}
+              <div className="flex justify-center pt-2">
+                <button
+                  onClick={handleReframing}
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/30 hover:scale-105 active:scale-95"
+                >
+                  {/* Animated background effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-indigo-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                  <div className="relative flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-all duration-300">
+                      <div className="text-lg">🌟</div>
+                    </div>
+                    <div className="text-left">
+                      <div className="font-bold text-base">Continue Healing</div>
+                      <div className="text-blue-200 text-xs font-medium">Transform with CBT</div>
+                    </div>
+                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+
+                  {/* Pulse effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/30 to-purple-400/30 opacity-0 group-hover:opacity-100 animate-pulse"></div>
+                </button>
+              </div>
+
+              {/* Encouragement Footer */}
+              <div className="text-center">
+                <div className="inline-flex items-center gap-3 bg-green-900/20 border border-green-600/30 px-4 py-2 rounded-full">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-400 font-semibold text-sm">You're doing amazing work</span>
+                  <div
+                    className="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+                    style={{ animationDelay: "0.3s" }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Emergency Journal Button - Simplified */}
           <button
             onClick={handleEmergencyJournal}
-            className="w-full p-5 bg-gradient-to-r from-orange-800/40 to-red-800/40 border border-orange-700/50 rounded-2xl text-left transition-all duration-200 hover:from-orange-700/50 hover:to-red-700/50 hover:border-orange-600/60"
+            className="w-full p-4 bg-gradient-to-br from-orange-900/40 to-red-900/40 border border-orange-600/30 rounded-2xl text-left transition-all duration-300 hover:from-orange-800/50 hover:to-red-800/50 hover:border-orange-500/50 backdrop-blur-sm"
           >
-            <div className="flex items-center gap-4">
-              <div className="text-2xl">🆘</div>
-              <div className="flex-1">
-                <h3 className="text-white font-semibold text-lg">Emergency Journal</h3>
-                <p className="text-gray-400 text-sm">I need someone to talk to</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="text-lg">🆘</div>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-base">Need Immediate Support?</h3>
+                  <p className="text-gray-400 text-sm">Emergency journal for overwhelming moments</p>
+                </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
+              <ChevronRight className="w-5 h-5 text-orange-400" />
             </div>
           </button>
         </div>

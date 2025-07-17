@@ -47,8 +47,6 @@ export default function QuizPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({})
   const [isLoading, setIsLoading] = useState(false)
   const [finalFormData, setFinalFormData] = useState({
-    name: "",
-    age: "",
     story: "",
   })
 
@@ -139,68 +137,99 @@ export default function QuizPage() {
         </div>
 
         {/* Final form content */}
-        <div className="flex flex-col items-center justify-between min-h-[calc(100vh-200px)] px-6 relative z-10">
-          <div className="w-full max-w-sm mx-auto space-y-8">
-            <div className="text-center space-y-4">
-              <h1 className="text-3xl font-bold text-white">Finally</h1>
-              <p className="text-xl text-gray-200">A little more about your story</p>
+        <div className="flex flex-col min-h-[calc(100vh-200px)] px-6 relative z-10">
+          {/* Header section */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4">Tell us what happened.</h1>
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <p className="text-green-400 text-sm font-medium">Don't worry, we will not share.</p>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
             </div>
+          </div>
 
-            {/* Form fields */}
-            <div className="space-y-6">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={finalFormData.name}
-                  onChange={(e) => setFinalFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full p-4 bg-slate-900/70 border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:border-blue-600 focus:outline-none transition-colors"
-                />
-              </div>
+          {/* Story input section */}
+          <div className="flex-1 mb-8">
+            <div className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-sm border border-slate-600/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/50 via-purple-500/50 to-pink-500/50"></div>
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
 
-              <div>
-                <input
-                  type="number"
-                  placeholder="Age"
-                  value={finalFormData.age}
-                  onChange={(e) => setFinalFormData((prev) => ({ ...prev, age: e.target.value }))}
-                  className="w-full p-4 bg-slate-900/70 border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:border-blue-600 focus:outline-none transition-colors"
-                />
-              </div>
+              {/* Input area */}
+              <div className="relative">
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"></div>
+                    <span className="text-gray-300 text-sm font-medium">Your Story</span>
+                  </div>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    Take your time. Share as much or as little as you'd like. This is your safe space to express what
+                    you're going through.
+                  </p>
+                </div>
 
-              <div>
-                <textarea
-                  placeholder="What happened? (Feel free to share your story...)"
-                  value={finalFormData.story}
-                  onChange={(e) => setFinalFormData((prev) => ({ ...prev, story: e.target.value }))}
-                  rows={4}
-                  className="w-full p-4 bg-slate-900/70 border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:border-blue-600 focus:outline-none transition-colors resize-none"
-                />
+                <div className="relative">
+                  {finalFormData.story === "" && (
+                    <div className="absolute top-6 left-6 text-gray-500 pointer-events-none font-light italic leading-relaxed z-10">
+                      Start typing here... You might want to share:
+                      <br />
+                      <span className="text-gray-600 text-sm">
+                        • What led to the breakup
+                        <br />• How you're feeling right now
+                        <br />• What's been the hardest part
+                        <br />• Any thoughts that keep coming up
+                      </span>
+                    </div>
+                  )}
+                  <textarea
+                    value={finalFormData.story}
+                    onChange={(e) => setFinalFormData((prev) => ({ ...prev, story: e.target.value }))}
+                    className="w-full min-h-[300px] p-6 bg-transparent border-0 text-white focus:outline-none resize-none leading-relaxed font-light text-base placeholder-transparent"
+                    style={{
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                    }}
+                  />
+                </div>
+
+                {/* Character count and encouragement */}
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-600/30">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <span className="text-gray-400 text-xs">
+                      {finalFormData.story.length > 0 ? "You're doing great" : "Take your time"}
+                    </span>
+                  </div>
+                  <span className="text-gray-500 text-xs">{finalFormData.story.length} characters</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Complete button */}
-          <div className="w-full max-w-sm mx-auto space-y-4">
+          <div className="w-full max-w-sm mx-auto space-y-4 pb-8">
             <Button
               onClick={() => {
                 setIsLoading(true)
                 setTimeout(() => {
                   setIsLoading(false)
-                  // Navigate to insights page instead of showing alert
+                  // Navigate to insights page
                   window.location.href = "/insights"
                 }, 2000)
               }}
-              disabled={!finalFormData.name || !finalFormData.age || isLoading}
-              className="w-full h-14 bg-blue-800 hover:bg-blue-700 disabled:bg-gray-800 disabled:cursor-not-allowed text-white font-semibold text-lg rounded-full transition-all duration-200 hover:shadow-lg"
+              disabled={!finalFormData.story.trim() || isLoading}
+              className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white font-semibold text-lg rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-blue-900/30"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
-                  Analyzing your responses...
+                  Creating your healing journey...
                 </div>
               ) : (
-                "Complete Quiz"
+                <div className="flex items-center gap-2">
+                  Begin My Healing Journey
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                </div>
               )}
             </Button>
 
@@ -273,41 +302,46 @@ export default function QuizPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-col items-center justify-between min-h-[calc(100vh-200px)] px-6 relative z-10">
+      <div className="flex flex-col min-h-[calc(100vh-200px)] px-6 relative z-10">
         {/* Question section */}
-        <div className="w-full max-w-sm mx-auto text-center space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-6">Question #{currentQ.id}</h1>
-            <p className="text-xl text-gray-200 leading-relaxed">{currentQ.question}</p>
-          </div>
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="w-full max-w-sm mx-auto text-center space-y-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-6">Question #{currentQ.id}</h1>
+              <p className="text-xl text-gray-200 leading-relaxed">{currentQ.question}</p>
+            </div>
 
-          {/* Answer options */}
-          <div className="space-y-4">
-            {currentQ.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleAnswerSelect(index)}
-                className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
-                  selectedAnswer === index
-                    ? "border-blue-600 bg-blue-900/30 shadow-lg shadow-blue-900/25"
-                    : "border-gray-700/50 bg-slate-900/30 hover:border-gray-600 hover:bg-slate-800/30"
-                }`}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                    selectedAnswer === index ? "bg-blue-400 text-white" : "bg-gray-600 text-gray-300"
+            {/* Answer options */}
+            <div className="space-y-4">
+              {currentQ.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSelect(index)}
+                  className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
+                    selectedAnswer === index
+                      ? "border-blue-600 bg-blue-900/30 shadow-lg shadow-blue-900/25"
+                      : "border-gray-700/50 bg-slate-900/30 hover:border-gray-600 hover:bg-slate-800/30"
                   }`}
                 >
-                  {index + 1}
-                </div>
-                <span className="text-white font-medium">{option}</span>
-              </button>
-            ))}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      selectedAnswer === index ? "bg-blue-400 text-white" : "bg-gray-600 text-gray-300"
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <span className="text-white font-medium">{option}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
+        {/* Spacer for better visual separation */}
+        <div className="h-16"></div>
+
         {/* Bottom buttons */}
-        <div className="w-full max-w-sm mx-auto space-y-4">
+        <div className="w-full max-w-sm mx-auto space-y-4 pb-8">
           <Button
             onClick={handleNext}
             disabled={selectedAnswer === undefined || isLoading}

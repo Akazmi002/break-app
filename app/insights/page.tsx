@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Info } from "lucide-react"
 
 interface Insight {
   id: number
@@ -42,6 +42,16 @@ const insights: Insight[] = [
 export default function InsightsPage() {
   const [animatedProgress, setAnimatedProgress] = useState<{ [key: number]: number }>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [isAnalyzing, setIsAnalyzing] = useState(true)
+
+  useEffect(() => {
+    // Show analyzing screen for 8 seconds
+    const analyzingTimer = setTimeout(() => {
+      setIsAnalyzing(false)
+    }, 8000)
+
+    return () => clearTimeout(analyzingTimer)
+  }, [])
 
   useEffect(() => {
     // Animate progress bars on mount
@@ -56,17 +66,124 @@ export default function InsightsPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleStartShifting = () => {
+  const handleStartTutorial = () => {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      // Navigate to dashboard
-      window.location.href = "/dashboard"
-    }, 1500)
+      // Navigate to tutorial
+      window.location.href = "/tutorial"
+    }, 1000)
   }
 
   const handleBack = () => {
     window.history.back()
+  }
+
+  const handleInsightDetail = (insight: Insight) => {
+    // Navigate to dedicated thought pattern page with source tracking
+    window.location.href = `/insights/${insight.id}?from=insights`
+  }
+
+  if (isAnalyzing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 relative overflow-hidden">
+        {/* Animated stars background */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/60 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`,
+                opacity: Math.random() * 0.4 + 0.2,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Status bar simulation */}
+        <div className="flex justify-between items-center p-4 text-gray-300 relative z-10">
+          <div className="text-sm font-medium">12:52</div>
+          <div className="flex items-center gap-1">
+            <div className="flex gap-1">
+              <div className="w-1 h-3 bg-gray-300 rounded-full"></div>
+              <div className="w-1 h-3 bg-gray-300 rounded-full"></div>
+              <div className="w-1 h-3 bg-gray-500 rounded-full"></div>
+            </div>
+            <div className="ml-2 w-6 h-3 border border-gray-300 rounded-sm">
+              <div className="w-4 h-full bg-gray-300 rounded-sm"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main analyzing content */}
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-6 relative z-10">
+          {/* Central analyzing animation */}
+          <div className="relative mb-12">
+            <div className="w-32 h-32 relative">
+              {/* Outer rotating ring */}
+              <div className="absolute inset-0 border-4 border-blue-500/30 border-t-blue-400 rounded-full animate-spin"></div>
+              {/* Inner pulsing circle */}
+              <div className="absolute inset-4 bg-gradient-to-br from-blue-600/20 to-indigo-700/20 rounded-full animate-pulse flex items-center justify-center">
+                {/* Brain icon */}
+                <div className="text-4xl">🧠</div>
+              </div>
+              {/* Floating particles */}
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-bounce"
+                  style={{
+                    left: `${20 + Math.cos((i * 45 * Math.PI) / 180) * 50}px`,
+                    top: `${20 + Math.sin((i * 45 * Math.PI) / 180) * 50}px`,
+                    animationDelay: `${i * 0.2}s`,
+                    animationDuration: `${1.5 + Math.random()}s`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Analyzing text */}
+          <div className="text-center space-y-6 max-w-md">
+            <h1 className="text-3xl font-bold text-white mb-4">Analyzing your negative thought patterns</h1>
+
+            <div className="space-y-4 text-gray-300 leading-relaxed">
+              <p className="text-lg">
+                We're examining the stories your mind tells you about yourself, your relationships, and your future.
+              </p>
+
+              <p className="text-base">
+                These patterns often feel like facts, but they're actually thoughts that can be questioned, understood,
+                and gently shifted toward healing.
+              </p>
+
+              <p className="text-base text-blue-300">
+                This process helps identify which thoughts are helping you heal and which ones might be keeping you
+                stuck.
+              </p>
+            </div>
+
+            {/* Progress dots */}
+            <div className="flex justify-center space-x-2 pt-8">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"
+                  style={{
+                    animationDelay: `${i * 0.3}s`,
+                    animationDuration: "1.5s",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -140,7 +257,16 @@ export default function InsightsPage() {
               }}
             >
               {/* Insight label */}
-              <h3 className="text-white font-semibold text-xl mb-4">{insight.label}</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-semibold text-xl">{insight.label}</h3>
+                <button
+                  onClick={() => handleInsightDetail(insight)}
+                  className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:shadow-lg"
+                >
+                  <Info className="w-4 h-4" />
+                  Learn More
+                </button>
+              </div>
 
               {/* Supporting quotes */}
               <div className="space-y-3 mb-6">
@@ -172,14 +298,14 @@ export default function InsightsPage() {
         {/* Call to action button */}
         <div className="mt-auto">
           <Button
-            onClick={handleStartShifting}
+            onClick={handleStartTutorial}
             disabled={isLoading}
             className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold text-lg rounded-full transition-all duration-200 hover:shadow-lg shadow-blue-900/30"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
-                Preparing your journey...
+                Starting tutorial...
               </div>
             ) : (
               <div className="flex items-center gap-2">
